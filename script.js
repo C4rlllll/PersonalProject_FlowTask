@@ -126,7 +126,7 @@ function renderHabits() {
     card.innerHTML = `
       <div class="habit-burst"></div>
       <div class="habit-top">
-        <div class="habit-emoji">${habit.emoji}</div>
+        <div class="habit-emoji">${escapeHtml(habit.emoji)}</div>
         <div class="habit-name-wrap">
           <span class="habit-name">${escapeHtml(habit.name)}</span>
           <span class="habit-progress-label">${habit.progress} / ${habit.target}</span>
