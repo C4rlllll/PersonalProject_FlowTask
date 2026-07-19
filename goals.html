@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FlowTask — Goals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="brand">
+        <span class="brand-mark">FT</span>
+        <span class="brand-name">FlowTask</span>
+      </div>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <nav class="nav" id="mainNav">
+      <a href="index.html" class="nav-item">
+        <span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span>
+      </a>
+      <a href="task.html" class="nav-item">
+        <span class="nav-icon">✅</span><span class="nav-label">Tasks</span>
+      </a>
+      <a href="agenda.html" class="nav-item">
+        <span class="nav-icon">📅</span><span class="nav-label">Agenda</span>
+      </a>
+      <a href="focus.html" class="nav-item">
+        <span class="nav-icon">🎯</span><span class="nav-label">Focus</span>
+      </a>
+      <a href="goals.html" class="nav-item active">
+        <span class="nav-icon">🏆</span><span class="nav-label">Goals</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <span class="profile-mini-sub">My Daily Dashboard</span>
+      <button class="icon-btn" id="settingsBtn" aria-label="Settings">⚙</button>
+    </div>
+  </aside>
+
+  <div class="sidebar-scrim" id="sidebarScrim"></div>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="main">
+
+    <header class="topbar">
+      <button class="hamburger hamburger-mobile" id="hamburgerBtnMobile" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="topbar-greeting">
+        <h1>Goals</h1>
+      </div>
+
+      <div class="topbar-right">
+        <span class="pill" id="goalsCountPill">0 goals</span>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <section class="panel" aria-label="Goals intro">
+        <div class="panel-header">
+          <h2>Multi-Phase Goals</h2>
+        </div>
+        <p class="planner-hint">
+          Break a big goal into phases — like "Prep for Java: Fundamentals → OOP → Collections → Practice."
+          Phases unlock in order, so you always know exactly what's next.
+        </p>
+      </section>
+
+      <section class="panel" aria-label="Your goals">
+        <div class="panel-header">
+          <h2>Your Goals</h2>
+        </div>
+        <div class="goal-list" id="goalList"></div>
+        <p class="empty-state" id="goalsEmptyState" hidden>No goals yet — add one below to start mapping it out.</p>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ===================== FLOATING ADD BUTTON ===================== -->
+<button class="fab" id="fabAddGoal" aria-label="Add goal">
+  <span class="fab-icon">+</span>
+  <span class="fab-label">Add Goal</span>
+</button>
+
+<!-- ===================== MODAL: GOAL ===================== -->
+<div class="modal-overlay" id="goalModalOverlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="goalModalTitle">
+    <div class="modal-header">
+      <h3 id="goalModalTitle">Add Goal</h3>
+      <button class="modal-close" data-close="goalModalOverlay">✕</button>
+    </div>
+    <form id="goalForm" class="modal-body">
+      <label class="field">
+        <span>Goal title</span>
+        <input type="text" id="goalTitle" placeholder="e.g. Prep for Java" required />
+      </label>
+
+      <div class="field">
+        <span>Phases (in order)</span>
+        <div id="phaseInputList" class="phase-input-list"></div>
+        <button type="button" class="btn-ghost-sm" id="addPhaseInputBtn">+ Add Phase</button>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" data-close="goalModalOverlay">Cancel</button>
+        <button type="submit" class="btn-primary">Save Goal</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== MODAL: ADD PHASE TO EXISTING GOAL ===================== -->
+<div class="modal-overlay" id="addPhaseModalOverlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="addPhaseModalTitle">
+    <div class="modal-header">
+      <h3 id="addPhaseModalTitle">Add Phase</h3>
+      <button class="modal-close" data-close="addPhaseModalOverlay">✕</button>
+    </div>
+    <form id="addPhaseForm" class="modal-body">
+      <input type="hidden" id="addPhaseGoalId" />
+      <label class="field">
+        <span>New phase title</span>
+        <input type="text" id="newPhaseTitle" placeholder="e.g. Phase 5: Final Review" required />
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" data-close="addPhaseModalOverlay">Cancel</button>
+        <button type="submit" class="btn-primary">Add Phase</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== TOAST ===================== -->
+<div class="toast" id="toast" hidden></div>
+
+<script src="common.js"></script>
+<script src="goals.js"></script>
+</body>
+</html>

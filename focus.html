@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FlowTask — Focus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="brand">
+        <span class="brand-mark">FT</span>
+        <span class="brand-name">FlowTask</span>
+      </div>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <nav class="nav" id="mainNav">
+      <a href="index.html" class="nav-item">
+        <span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span>
+      </a>
+      <a href="task.html" class="nav-item">
+        <span class="nav-icon">✅</span><span class="nav-label">Tasks</span>
+      </a>
+      <a href="agenda.html" class="nav-item">
+        <span class="nav-icon">📅</span><span class="nav-label">Agenda</span>
+      </a>
+      <a href="focus.html" class="nav-item active">
+        <span class="nav-icon">🎯</span><span class="nav-label">Focus</span>
+      </a>
+      <a href="goals.html" class="nav-item">
+        <span class="nav-icon">🏆</span><span class="nav-label">Goals</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <span class="profile-mini-sub">My Daily Dashboard</span>
+      <button class="icon-btn" id="settingsBtn" aria-label="Settings">⚙</button>
+    </div>
+  </aside>
+
+  <div class="sidebar-scrim" id="sidebarScrim"></div>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="main">
+
+    <header class="topbar">
+      <button class="hamburger hamburger-mobile" id="hamburgerBtnMobile" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="topbar-greeting">
+        <h1>Focus</h1>
+      </div>
+
+      <div class="topbar-right">
+        <span class="pill" id="focusSessionsPill">0 sessions today</span>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- ===================== SETUP PANEL ===================== -->
+      <section class="panel" id="focusSetupPanel" aria-label="Focus session setup">
+        <div class="panel-header">
+          <h2>Start a Focus Session</h2>
+        </div>
+
+        <div class="focus-setup-grid">
+          <label class="field">
+            <span>Mode</span>
+            <select id="focusPreset">
+              <option value="classic">Classic — 25 focus / 5 break</option>
+              <option value="exam">Exam Mode — 25 review / 5 break / 15 self-test / 15 break</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Linked task</span>
+            <select id="focusTaskSelect">
+              <option value="">Just focus — no linked task</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Work sessions until task is marked done</span>
+            <input type="number" id="focusSessionsTarget" min="1" max="12" value="4" />
+          </label>
+        </div>
+
+        <button class="btn-primary focus-start-btn" id="startFocusBtn">Start Session</button>
+      </section>
+
+      <!-- ===================== TIMER PANEL ===================== -->
+      <section class="panel focus-timer-panel" id="focusTimerPanel" aria-label="Active focus session" hidden>
+        <div class="panel-header">
+          <h2 id="focusLinkedTaskLabel">Focusing</h2>
+          <button class="btn-ghost-sm" id="endSessionBtn">End Session</button>
+        </div>
+
+        <div class="focus-phase-dots" id="focusPhaseDots"></div>
+
+        <div class="focus-clock-wrap">
+          <svg class="focus-ring" viewBox="0 0 260 260">
+            <circle class="focus-ring-track" cx="130" cy="130" r="118"></circle>
+            <circle class="focus-ring-fill" id="focusRingFill" cx="130" cy="130" r="118"></circle>
+          </svg>
+          <div class="focus-clock-center">
+            <span class="focus-phase-label" id="focusPhaseLabel">Focus</span>
+            <span class="focus-clock-time" id="focusClockTime">25:00</span>
+            <span class="focus-cycle-label" id="focusCycleLabel">Session 1 of 4</span>
+          </div>
+        </div>
+
+        <div class="focus-controls">
+          <button class="btn-secondary" id="skipPhaseBtn">Skip Phase</button>
+          <button class="btn-primary" id="pauseResumeBtn">Pause</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ===================== TOAST ===================== -->
+<div class="toast" id="toast" hidden></div>
+
+<script src="common.js"></script>
+<script src="focus.js"></script>
+</body>
+</html>

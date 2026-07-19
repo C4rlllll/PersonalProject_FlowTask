@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FlowTask — Agenda Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="brand">
+        <span class="brand-mark">FT</span>
+        <span class="brand-name">FlowTask</span>
+      </div>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <nav class="nav" id="mainNav">
+      <a href="index.html" class="nav-item">
+        <span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span>
+      </a>
+      <a href="task.html" class="nav-item">
+        <span class="nav-icon">✅</span><span class="nav-label">Tasks</span>
+      </a>
+      <a href="agenda.html" class="nav-item active">
+        <span class="nav-icon">📅</span><span class="nav-label">Agenda</span>
+      </a>
+      <a href="focus.html" class="nav-item">
+        <span class="nav-icon">🎯</span><span class="nav-label">Focus</span>
+      </a>
+      <a href="goals.html" class="nav-item">
+        <span class="nav-icon">🏆</span><span class="nav-label">Goals</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <span class="profile-mini-sub">My Daily Dashboard</span>
+      <button class="icon-btn" id="settingsBtn" aria-label="Settings">⚙</button>
+    </div>
+  </aside>
+
+  <div class="sidebar-scrim" id="sidebarScrim"></div>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="main">
+
+    <header class="topbar">
+      <button class="hamburger hamburger-mobile" id="hamburgerBtnMobile" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="topbar-greeting">
+        <h1>Agenda Planner</h1>
+      </div>
+
+      <div class="topbar-right">
+        <div class="topbar-date" id="topbarDate">—</div>
+        <button class="icon-btn notif-btn" id="notifBtn" aria-label="Notifications">🔔</button>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <section class="panel" aria-label="Agenda planner summary">
+        <div class="panel-header">
+          <h2>Plan Your Schedule</h2>
+          <span class="panel-sub">Only today's items show on your Dashboard</span>
+        </div>
+        <p class="planner-hint">
+          Schedule events for today or any day ahead. Once the day you picked arrives, that item
+          automatically shows up on your Dashboard's Today's Agenda timeline.
+        </p>
+      </section>
+
+      <section class="panel" aria-label="Today">
+        <div class="panel-header">
+          <h2>Today</h2>
+          <span class="pill pill-today" id="todayCountPill">0 items</span>
+        </div>
+        <div class="timeline" id="todayAgendaList"></div>
+        <p class="empty-state" id="todayEmptyState" hidden>Nothing scheduled for today yet.</p>
+      </section>
+
+      <section class="panel" aria-label="Upcoming schedule">
+        <div class="panel-header">
+          <h2>Upcoming</h2>
+          <span class="pill" id="upcomingCountPill">0 scheduled</span>
+        </div>
+        <div id="weeklyAgendaPlanner"></div>
+        <p class="empty-state" id="upcomingEmptyState" hidden>Nothing scheduled beyond today.</p>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ===================== FLOATING ADD BUTTON ===================== -->
+<button class="fab" id="fabAddAgenda" aria-label="Add agenda item">
+  <span class="fab-icon">+</span>
+  <span class="fab-label">Add Event</span>
+</button>
+
+<!-- ===================== MODAL: AGENDA ===================== -->
+<div class="modal-overlay" id="agendaModalOverlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="agendaModalTitle">
+    <div class="modal-header">
+      <h3 id="agendaModalTitle">Add Agenda Item</h3>
+      <button class="modal-close" data-close="agendaModalOverlay">✕</button>
+    </div>
+    <form id="agendaForm" class="modal-body">
+      <input type="hidden" id="agendaId" />
+      <label class="field">
+        <span>Event</span>
+        <input type="text" id="agendaTitle" placeholder="e.g. Programming Class" required />
+      </label>
+      <label class="field">
+        <span>Description (optional)</span>
+        <textarea id="agendaDescription" rows="2" placeholder="e.g. Bring laptop, review chapter 3"></textarea>
+      </label>
+      <div class="field-row">
+        <label class="field">
+          <span>Date</span>
+          <input type="date" id="agendaDate" required />
+        </label>
+        <label class="field">
+          <span>Time</span>
+          <input type="time" id="agendaTime" required />
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" data-close="agendaModalOverlay">Cancel</button>
+        <button type="submit" class="btn-primary">Save Item</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== TOAST ===================== -->
+<div class="toast" id="toast" hidden></div>
+
+<script src="common.js"></script>
+<script src="agenda.js"></script>
+</body>
+</html>
