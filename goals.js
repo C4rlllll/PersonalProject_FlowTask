@@ -1,8 +1,3 @@
-/* =========================================================
-   FLOW — goals.js (Goals page)
-   Requires common.js loaded first.
-========================================================= */
-
 function phaseStepperHtml(goal) {
   const cur = currentPhaseIndex(goal);
   return goal.phases
@@ -116,9 +111,9 @@ function initGoalFormEvents() {
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const title = document.getElementById("goalTitle").value.trim();
+    const title = clampText(document.getElementById("goalTitle").value, 150);
     const phaseTitles = Array.from(document.querySelectorAll(".phase-input"))
-      .map((input) => input.value.trim())
+      .map((input) => clampText(input.value, 150))
       .filter(Boolean);
 
     if (!title || phaseTitles.length === 0) {
@@ -148,7 +143,7 @@ function initAddPhaseEvents() {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const goalId = document.getElementById("addPhaseGoalId").value;
-    const title = document.getElementById("newPhaseTitle").value.trim();
+    const title = clampText(document.getElementById("newPhaseTitle").value, 150);
     if (!title) return;
 
     const goal = state.goals.find((g) => g.id === goalId);

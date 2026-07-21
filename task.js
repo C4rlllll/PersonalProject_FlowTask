@@ -1,8 +1,3 @@
-/* =========================================================
-   FLOW — task.js (Task Planner page)
-   Requires common.js loaded first.
-========================================================= */
-
 function renderTopbarDate() {
   const dateStr = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
   document.getElementById("topbarDate").textContent = dateStr;
@@ -135,7 +130,7 @@ function initPlannerTaskEvents() {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const id = document.getElementById("taskId").value;
-    const title = document.getElementById("taskTitle").value.trim();
+    const title = clampText(document.getElementById("taskTitle").value, 150);
     const priority = document.getElementById("taskPriority").value;
     const status = document.getElementById("taskStatus").value;
     const time = document.getElementById("taskTime").value;

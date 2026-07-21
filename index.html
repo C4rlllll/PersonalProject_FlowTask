@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css" id="themeLink">
 </head>
 <body>
 
@@ -227,7 +227,7 @@
       <input type="hidden" id="taskId" />
       <label class="field">
         <span>Title</span>
-        <input type="text" id="taskTitle" placeholder="e.g. Study Java fundamentals" required />
+        <input type="text" id="taskTitle" placeholder="e.g. Study Java fundamentals" maxlength="150" required />
       </label>
       <div class="field-row">
         <label class="field">
@@ -279,11 +279,11 @@
       <input type="hidden" id="agendaId" />
       <label class="field">
         <span>Event</span>
-        <input type="text" id="agendaTitle" placeholder="e.g. Programming Class" required />
+        <input type="text" id="agendaTitle" placeholder="e.g. Programming Class" maxlength="150" required />
       </label>
       <label class="field">
         <span>Description (optional)</span>
-        <textarea id="agendaDescription" rows="2" placeholder="e.g. Bring laptop, review chapter 3"></textarea>
+        <textarea id="agendaDescription" rows="2" maxlength="500" placeholder="e.g. Bring laptop, review chapter 3"></textarea>
       </label>
       <div class="field-row">
         <label class="field">
@@ -317,7 +317,7 @@
       </label>
       <label class="field">
         <span>Habit name</span>
-        <input type="text" id="habitName" placeholder="e.g. Drink Water" required />
+        <input type="text" id="habitName" placeholder="e.g. Drink Water" maxlength="60" required />
       </label>
       <label class="field">
         <span>Daily target</span>

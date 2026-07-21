@@ -1,13 +1,3 @@
-/* =========================================================
-   FLOW — focus.js (Focus / Pomodoro page)
-   Requires common.js loaded first.
-========================================================= */
-
-/* ---------------------------------------------------------
-   PRESETS
-   Each phase: { type: "work" | "break", label, seconds }
-   "work" phases are the ones that count toward auto-progress.
---------------------------------------------------------- */
 const PRESETS = {
   classic: [
     { type: "work", label: "Focus", seconds: 25 * 60 },

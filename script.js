@@ -1,13 +1,3 @@
-/* =========================================================
-   FLOW — script.js (Dashboard page)
-   Requires common.js loaded first (DataStore, state, uid,
-   loadState, persist*, formatTime12h, todayISO, escapeHtml,
-   showToast, initSidebarToggle, openModal/closeModal, etc.)
-========================================================= */
-
-/* ---------------------------------------------------------
-   RENDER FUNCTIONS
---------------------------------------------------------- */
 function renderGreetingAndDate() {
   const now = new Date();
   const hour = now.getHours();
@@ -286,7 +276,7 @@ function initTaskEvents() {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const id = document.getElementById("taskId").value;
-    const title = document.getElementById("taskTitle").value.trim();
+    const title = clampText(document.getElementById("taskTitle").value, 150);
     const priority = document.getElementById("taskPriority").value;
     const status = document.getElementById("taskStatus") ? document.getElementById("taskStatus").value : "not-started";
     const time = document.getElementById("taskTime").value;
@@ -369,8 +359,8 @@ function initAgendaEvents() {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const id = document.getElementById("agendaId").value;
-    const title = document.getElementById("agendaTitle").value.trim();
-    const description = document.getElementById("agendaDescription").value.trim();
+    const title = clampText(document.getElementById("agendaTitle").value, 150);
+    const description = clampText(document.getElementById("agendaDescription").value, 500);
     const date = document.getElementById("agendaDate").value;
     const time = document.getElementById("agendaTime").value;
     if (!title || !time || !date) return;
@@ -434,8 +424,8 @@ function initHabitEvents() {
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const emoji = document.getElementById("habitEmoji").value.trim() || "⭐";
-    const name = document.getElementById("habitName").value.trim();
+    const emoji = clampText(document.getElementById("habitEmoji").value, 4) || "⭐";
+    const name = clampText(document.getElementById("habitName").value, 60);
     const target = Math.max(1, Number(document.getElementById("habitTarget").value) || 1);
     if (!name) return;
 

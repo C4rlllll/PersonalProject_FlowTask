@@ -1,8 +1,3 @@
-/* =========================================================
-   FLOW — agenda.js (Agenda Planner page)
-   Requires common.js loaded first.
-========================================================= */
-
 function renderTopbarDate() {
   const dateStr = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
   document.getElementById("topbarDate").textContent = dateStr;
@@ -138,8 +133,8 @@ function initAgendaPlannerEvents() {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const id = document.getElementById("agendaId").value;
-    const title = document.getElementById("agendaTitle").value.trim();
-    const description = document.getElementById("agendaDescription").value.trim();
+    const title = clampText(document.getElementById("agendaTitle").value, 150);
+    const description = clampText(document.getElementById("agendaDescription").value, 500);
     const date = document.getElementById("agendaDate").value;
     const time = document.getElementById("agendaTime").value;
     if (!title || !date || !time) return;

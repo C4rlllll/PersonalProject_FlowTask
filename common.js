@@ -1,12 +1,3 @@
-/* =========================================================
-   FLOW — common.js
-   Shared across index.html (Dashboard) and task.html (Tasks).
-   Load this BEFORE script.js / task.js on each page.
-========================================================= */
-
-/* ---------------------------------------------------------
-   DATA STORE
---------------------------------------------------------- */
 const DataStore = (() => {
   const KEYS = {
     tasks: "flow.tasks",
@@ -96,14 +87,35 @@ function uid(prefix) {
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
 }
 
+function todayISO() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+const SEED_AGENDA = [
+  { id: "a1", title: "Programming Class", description: "", time: "09:00", date: todayISO(), done: false },
+  { id: "a2", title: "Study Java", description: "", time: "13:00", date: todayISO(), done: false },
+  { id: "a3", title: "Gym", description: "", time: "18:00", date: todayISO(), done: false },
+];
+
+// Defensive Array.isArray/typeof checks mean corrupted or tampered
+// localStorage data (or a missing field from an older version)
+// falls back to a safe default instead of crashing the app.
 function loadState() {
-  state.tasks = DataStore.getTasks() ?? SEED_TASKS;
-  state.agenda = DataStore.getAgenda() ?? SEED_AGENDA;
-  state.habits = DataStore.getHabits() ?? SEED_HABITS;
-  state.goals = DataStore.getGoals() ?? SEED_GOALS;
-  state.user = DataStore.getUser() ?? { name: "Pogi" };
-  state.stats = DataStore.getStats() ?? { completedToday: 0, focusSessionsToday: 0 };
-  if (state.stats.focusSessionsToday === undefined) state.stats.focusSessionsToday = 0;
+  const rawTasks = DataStore.getTasks();
+  const rawAgenda = DataStore.getAgenda();
+  const rawHabits = DataStore.getHabits();
+  const rawGoals = DataStore.getGoals();
+  const rawUser = DataStore.getUser();
+  const rawStats = DataStore.getStats();
+
+  state.tasks = Array.isArray(rawTasks) ? rawTasks : SEED_TASKS;
+  state.agenda = Array.isArray(rawAgenda) ? rawAgenda : SEED_AGENDA;
+  state.habits = Array.isArray(rawHabits) ? rawHabits : SEED_HABITS;
+  state.goals = Array.isArray(rawGoals) ? rawGoals : SEED_GOALS;
+  state.user = rawUser && typeof rawUser === "object" ? rawUser : { name: "Pogi" };
+  state.stats = rawStats && typeof rawStats === "object" ? rawStats : { completedToday: 0, focusSessionsToday: 0 };
+  if (typeof state.stats.focusSessionsToday !== "number") state.stats.focusSessionsToday = 0;
+  if (typeof state.stats.completedToday !== "number") state.stats.completedToday = 0;
 
   // Sweep out any leftover done tasks so they don't sit in the array forever
   const leftoverDone = state.tasks.filter((t) => t.done).length;
@@ -124,6 +136,7 @@ function persistTasks() { DataStore.setTasks(state.tasks); }
 function persistAgenda() { DataStore.setAgenda(state.agenda); }
 function persistHabits() { DataStore.setHabits(state.habits); }
 function persistGoals() { DataStore.setGoals(state.goals); }
+function persistStats() { DataStore.setStats(state.stats); }
 
 /* ---------------------------------------------------------
    GOALS — shared phase logic (used by dashboard + goals page)
@@ -147,7 +160,6 @@ function canTogglePhase(goal, index) {
   if (cur === -1) return index === goal.phases.length - 1;
   return index === cur || index === cur - 1;
 }
-function persistStats() { DataStore.setStats(state.stats); }
 
 /* ---------------------------------------------------------
    SHARED HELPERS
@@ -166,21 +178,21 @@ function formatDatePretty(isoDate) {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-function todayISO() {
-  return new Date().toISOString().slice(0, 10);
-}
-
 function getTodayDueTasks() {
   const today = todayISO();
   return state.tasks.filter((t) => !t.done && (!t.scheduledDate || t.scheduledDate <= today));
 }
 
-const SEED_AGENDA = [
-  { id: "a1", title: "Programming Class", description: "", time: "09:00", date: todayISO(), done: false },
-  { id: "a2", title: "Study Java", description: "", time: "13:00", date: todayISO(), done: false },
-  { id: "a3", title: "Gym", description: "", time: "18:00", date: todayISO(), done: false },
-];
+// Trims and hard-caps user-entered text before it's stored, so a
+// pasted wall of text can't bloat storage or break card layouts.
+function clampText(str, maxLen) {
+  return (str ?? "").toString().trim().slice(0, maxLen);
+}
 
+// Escapes user-entered text before it's inserted via innerHTML —
+// the core defense against XSS. Every field rendered from state
+// (task titles, descriptions, goal/phase titles, habit names and
+// emoji, etc.) is passed through this before being templated in.
 function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str;
@@ -202,7 +214,6 @@ function showToast(message) {
 
 /* ---------------------------------------------------------
    SHARED UI: sidebar toggle + modal open/close
-   (used identically on both pages)
 --------------------------------------------------------- */
 function initSidebarToggle() {
   const sidebar = document.getElementById("sidebar");
@@ -220,13 +231,6 @@ function initSidebarToggle() {
   document.querySelectorAll(".nav-item").forEach((item) => {
     item.addEventListener("click", () => close());
   });
-
-  const settingsBtn = document.getElementById("settingsBtn");
-  if (settingsBtn) {
-    settingsBtn.addEventListener("click", () => {
-      showToast("Settings coming soon");
-    });
-  }
 }
 
 function openModal(id) { document.getElementById(id).hidden = false; }
@@ -246,3 +250,137 @@ function initModalCloseButtons() {
     }
   });
 }
+
+/* ---------------------------------------------------------
+   THEME SWITCHER
+   Boy/Girl x Light/Dark. Applies instantly and persists
+   across pages via a plain localStorage preference.
+--------------------------------------------------------- */
+const THEME_KEY = "flow.theme";
+const THEME_FILES = {
+  "boy-dark": "style.css",
+  "boy-light": "style-light.css",
+  "girl-dark": "style-pink.css",
+  "girl-light": "style-lightpink.css",
+};
+
+function getSavedTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  return THEME_FILES[saved] ? saved : "boy-dark";
+}
+
+function applyTheme(themeId) {
+  const link = document.getElementById("themeLink");
+  if (link && THEME_FILES[themeId]) {
+    link.setAttribute("href", THEME_FILES[themeId]);
+  }
+  localStorage.setItem(THEME_KEY, themeId);
+}
+
+function injectThemeModalStyles() {
+  if (document.getElementById("flow-theme-style")) return;
+  const style = document.createElement("style");
+  style.id = "flow-theme-style";
+  style.textContent = `
+    #flowThemeOverlay { position:fixed; inset:0; background:rgba(2,6,23,0.6); backdrop-filter:blur(4px); z-index:9998; display:flex; align-items:center; justify-content:center; padding:20px; }
+    #flowThemeOverlay[hidden] { display:none !important; }
+    .flow-theme-card { background:var(--sidebar,#1E293B); border:1px solid var(--border-strong,rgba(148,163,184,0.22)); border-radius:16px; padding:24px; width:100%; max-width:360px; font-family:'Inter',sans-serif; box-shadow:0 16px 36px rgba(0,0,0,0.3); }
+    .flow-theme-card h3 { margin:0 0 4px; font-size:16px; color:var(--text,#F8FAFC); font-family:'Inter Tight',sans-serif; }
+    .flow-theme-card p { margin:0 0 16px; font-size:12.5px; color:var(--text-secondary,#94A3B8); }
+    .flow-theme-group { margin-bottom:14px; }
+    .flow-theme-group-label { font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-secondary,#94A3B8); margin-bottom:8px; }
+    .flow-theme-options { display:flex; gap:8px; }
+    .flow-theme-opt { flex:1; padding:10px; border-radius:10px; border:1.5px solid var(--border-strong,rgba(148,163,184,0.22)); background:transparent; color:var(--text,#F8FAFC); font-size:13px; font-weight:600; cursor:pointer; }
+    .flow-theme-opt.active { border-color:var(--primary,#6366F1); background:var(--primary-soft,rgba(99,102,241,0.16)); }
+    .flow-theme-close { width:100%; margin-top:8px; padding:10px; border:none; border-radius:999px; background:var(--primary,#6366F1); color:#fff; font-weight:700; font-size:13px; cursor:pointer; }
+  `;
+  document.head.appendChild(style);
+}
+
+function ensureThemeModal() {
+  if (document.getElementById("flowThemeOverlay")) return;
+  injectThemeModalStyles();
+
+  const overlay = document.createElement("div");
+  overlay.id = "flowThemeOverlay";
+  overlay.hidden = true;
+  overlay.innerHTML = `
+    <div class="flow-theme-card">
+      <h3>🎨 Theme</h3>
+      <p>Pick a look — applies right away and stays on every page.</p>
+      <div class="flow-theme-group">
+        <div class="flow-theme-group-label">Style</div>
+        <div class="flow-theme-options" id="flowThemeGender">
+          <button type="button" class="flow-theme-opt" data-gender="boy">Boy</button>
+          <button type="button" class="flow-theme-opt" data-gender="girl">Girl</button>
+        </div>
+      </div>
+      <div class="flow-theme-group">
+        <div class="flow-theme-group-label">Mode</div>
+        <div class="flow-theme-options" id="flowThemeMode">
+          <button type="button" class="flow-theme-opt" data-mode="light">Light</button>
+          <button type="button" class="flow-theme-opt" data-mode="dark">Dark</button>
+        </div>
+      </div>
+      <button type="button" class="flow-theme-close" id="flowThemeCloseBtn">Done</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) overlay.hidden = true;
+  });
+  document.getElementById("flowThemeCloseBtn").addEventListener("click", () => {
+    overlay.hidden = true;
+  });
+
+  function currentParts() {
+    const current = getSavedTheme(); // e.g. "boy-dark"
+    const [gender, mode] = current.split("-");
+    return { gender, mode };
+  }
+
+  function refreshActiveButtons() {
+    const { gender, mode } = currentParts();
+    document.querySelectorAll("#flowThemeGender .flow-theme-opt").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.gender === gender);
+    });
+    document.querySelectorAll("#flowThemeMode .flow-theme-opt").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.mode === mode);
+    });
+  }
+
+  document.getElementById("flowThemeGender").addEventListener("click", (e) => {
+    const btn = e.target.closest(".flow-theme-opt");
+    if (!btn) return;
+    const { mode } = currentParts();
+    applyTheme(`${btn.dataset.gender}-${mode}`);
+    refreshActiveButtons();
+  });
+  document.getElementById("flowThemeMode").addEventListener("click", (e) => {
+    const btn = e.target.closest(".flow-theme-opt");
+    if (!btn) return;
+    const { gender } = currentParts();
+    applyTheme(`${gender}-${btn.dataset.mode}`);
+    refreshActiveButtons();
+  });
+
+  refreshActiveButtons();
+}
+
+function initThemeSwitcher() {
+  applyTheme(getSavedTheme());
+
+  const settingsBtn = document.getElementById("settingsBtn");
+  if (settingsBtn) {
+    settingsBtn.addEventListener("click", () => {
+      ensureThemeModal();
+      document.getElementById("flowThemeOverlay").hidden = false;
+    });
+  }
+}
+
+/* ---------------------------------------------------------
+   INIT
+--------------------------------------------------------- */
+document.addEventListener("DOMContentLoaded", initThemeSwitcher);

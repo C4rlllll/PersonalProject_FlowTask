@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css" id="themeLink">
 </head>
 <body>
 
@@ -122,7 +122,7 @@
       <input type="hidden" id="taskId" />
       <label class="field">
         <span>Title</span>
-        <input type="text" id="taskTitle" placeholder="e.g. Study Java fundamentals" required />
+        <input type="text" id="taskTitle" placeholder="e.g. Study Java fundamentals" maxlength="150" required />
       </label>
       <div class="field-row">
         <label class="field">
